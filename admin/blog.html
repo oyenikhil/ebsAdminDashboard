@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+
+/* Style the tab */
+.tab {
+  overflow: hidden;
+  text-align: center;
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+  background: none;
+  color: black;
+  float: center;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  border-bottom: 3px solid #008cc9;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  border-bottom: 3px solid #f44336;
+  
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 20px;
+  margin-top: 20px;
+}
+</style>
+</head>
+<body>
+
+<div class="tab">
+  <button class="tablinks" onclick="openCity(event, 'London')">Arduino Courses</button>
+  <button class="tablinks" onclick="openCity(event, 'Paris')">Raspberry PI Courses</button>
+  <button class="tablinks" onclick="openCity(event, 'Tokyo')">IOT Courses</button>
+</div>
+
+<div id="London" class="tabcontent">
+  <div class="arduinobox">
+    <div class="test1">
+    <img src="https://classroom.elecbits.in/wp-content/uploads/2019/02/elecduino-trios-product.png" height="350px" width="350px">
+        <h4 style="padding-left: 15px;"><b><a href="https://classroom.elecbits.in/course/elecduino-un/">Elecduino Un</a></b></h4>
+        <p style="padding-left: 15px; margin-top: -7px; font-size: 14px;"><b><a href="https://classroom.elecbits.in/profile/">Elecbits16</a></b></p>
+        <p style="padding-left: 15px; padding-right: 15px; margin-top: -13px; text-align: justify; font-size: 14px;">Everything from cars to factories are tied to robotics and electronics engineering. Whether you dream of becoming a Hardware Designer at Apple or an Aerospace Technician at NASA, your robotics path starts here!</p>
+        <p style="margin-bottom: -50px;"><span class="fa fa-star checked" style="color: orange; padding-left: 15px;"></span>
+        <span class="fa fa-star checked" style="color: orange;"></span>
+        <span class="fa fa-star checked" style="color: orange;"></span>
+        <span class="fa fa-star checked" style="color: orange;"></span>
+        <a href="https://classroom.elecbits.in/course/elecduino-un/"><button style="margin-left: 20px; border-radius: 40px;">View Course</button></a>
+        </p>
+     </div>
+<br/><br/>
+    <div class="test2">
+    <img src="https://classroom.elecbits.in/wp-content/uploads/2018/12/summer-duios-product.png" height="350px" width="350px">
+        <h4 style="padding-left: 15px;"><b><a href="https://classroom.elecbits.in/course/elecduino-deux-intermediate-course-for-arduino/">Elecduino Deux</a></b></h4>
+        <p style="padding-left: 15px; margin-top: -7px; font-size: 14px;"><b><a href="https://classroom.elecbits.in/profile/">Elecbits16</a></b></p>
+        <p style="padding-left: 15px; padding-right: 15px; margin-top: -13px; text-align: justify; font-size: 14px;">Everything from cars to factories are tied to robotics and electronics engineering. Whether you dream of becoming a Hardware Designer at Apple or an Aerospace Technician at NASA, your robotics path starts here!</p>
+        <p style="margin-bottom: -50px;"><span class="fa fa-star checked" style="color: orange; padding-left: 15px;"></span>
+        <span class="fa fa-star checked" style="color: orange;"></span>
+        <span class="fa fa-star checked" style="color: orange;"></span>
+        <span class="fa fa-star checked" style="color: orange;"></span>
+        <a href="https://classroom.elecbits.in/course/elecduino-deux-intermediate-course-for-arduino/"><button style="margin-left: 20px; border-radius: 40px;">View Course</button></a>
+        </p>
+     </div>
+<br/><br/>
+    <div class="test3">
+    <img src="https://classroom.elecbits.in/wp-content/uploads/2019/04/summer-duex.png" height="350px" width="350px">
+        <h4 style="padding-left: 15px;"><b><a href="https://classroom.elecbits.in/course/elecduino-trois-advanced-course-for-arduino/">Elecduino Trios</a></b></h4>
+        <p style="padding-left: 15px; margin-top: -7px; font-size: 14px;"><b><a href="https://classroom.elecbits.in/profile/">Elecbits16</a></b></p>
+        <p style="padding-left: 15px; padding-right: 15px; margin-top: -13px; text-align: justify; font-size: 14px;">Everything from cars to factories are tied to robotics and electronics engineering. Whether you dream of becoming a Hardware Designer at Apple or an Aerospace Technician at NASA, your robotics path starts here!</p>
+        <p style="margin-bottom: -50px;"><span class="fa fa-star checked" style="color: orange; padding-left: 15px;"></span>
+        <span class="fa fa-star checked" style="color: orange;"></span>
+        <span class="fa fa-star checked" style="color: orange;"></span>
+        <span class="fa fa-star checked" style="color: orange;"></span>
+        <a href="https://classroom.elecbits.in/course/elecduino-trois-advanced-course-for-arduino/"><button style="margin-left: 20px; border-radius: 40px;">View Course</button></a>
+        </p>
+     </div>
+</div>
+</div>
+
+<div id="Paris" class="tabcontent">
+  <div class="arduinobox">
+    <div class="test1">
+    <img src="https://classroom.elecbits.in/wp-content/uploads/2019/05/raspb.png" height="350px" width="350px">
+        <h4 style="padding-left: 15px;"><b><a href="https://classroom.elecbits.in/course/raspberry-pi-based-iot-development/">Raspberry Pi Kit One</a></b></h4>
+        <p style="padding-left: 15px; margin-top: -7px; font-size: 14px;"><b><a href="https://classroom.elecbits.in/profile/">Elecbits16</a></b></p>
+        <p style="padding-left: 15px; padding-right: 15px; margin-top: -13px; text-align: justify; font-size: 14px;">Everything from cars to factories are tied to robotics and electronics engineering. Whether you dream of becoming a Hardware Designer at Apple or an Aerospace Technician at NASA, your robotics path starts here!</p>
+        <p style="margin-bottom: -50px;"><span class="fa fa-star checked" style="color: orange; padding-left: 15px;"></span>
+        <span class="fa fa-star checked" style="color: orange;"></span>
+        <span class="fa fa-star checked" style="color: orange;"></span>
+        <span class="fa fa-star checked" style="color: orange;"></span>
+        <a href="https://classroom.elecbits.in/course/raspberry-pi-based-iot-development/"><button style="margin-left: 20px; border-radius: 40px;">View Course</button></a>
+        </p>
+     </div>
+<br/><br/>
+    <div class="test2">
+    <img src="https://classroom.elecbits.in/wp-content/uploads/2019/05/raspb.png" height="350px" width="350px">
+        <h4 style="padding-left: 15px;"><b><a href="https://classroom.elecbits.in/course/raspberry-pi-kit-two/">Raspberry Pi Kit Two</a></b></h4>
+        <p style="padding-left: 15px; margin-top: -7px; font-size: 14px;"><b><a href="https://classroom.elecbits.in/profile/">Elecbits16</a></b></p>
+        <p style="padding-left: 15px; padding-right: 15px; margin-top: -13px; text-align: justify; font-size: 14px;">Everything from cars to factories are tied to robotics and electronics engineering. Whether you dream of becoming a Hardware Designer at Apple or an Aerospace Technician at NASA, your robotics path starts here!</p>
+        <p style="margin-bottom: -50px;"><span class="fa fa-star checked" style="color: orange; padding-left: 15px;"></span>
+        <span class="fa fa-star checked" style="color: orange;"></span>
+        <span class="fa fa-star checked" style="color: orange;"></span>
+        <span class="fa fa-star checked" style="color: orange;"></span>
+        <a href="https://classroom.elecbits.in/course/raspberry-pi-kit-two/"><button style="margin-left: 20px; border-radius: 40px;">View Course</button></a>
+        </p>
+     </div>
+<br/><br/>
+    <div class="test3">
+    <img src="https://classroom.elecbits.in/wp-content/uploads/2019/05/raspb.png" height="350px" width="350px">
+        <h4 style="padding-left: 15px;"><b><a href="https://classroom.elecbits.in/course/play-games-with-raspberry-pi/">Play Games With Raspberry Pi</a></b></h4>
+        <p style="padding-left: 15px; margin-top: -7px; font-size: 14px;"><b><a href="https://classroom.elecbits.in/profile/">Elecbits16</a></b></p>
+        <p style="padding-left: 15px; padding-right: 15px; margin-top: -13px; text-align: justify; font-size: 14px;">Everything from cars to factories are tied to robotics and electronics engineering. Whether you dream of becoming a Hardware Designer at Apple or an Aerospace Technician at NASA, your robotics path starts here!</p>
+        <p style="margin-bottom: -50px;"><span class="fa fa-star checked" style="color: orange; padding-left: 15px;"></span>
+        <span class="fa fa-star checked" style="color: orange;"></span>
+        <span class="fa fa-star checked" style="color: orange;"></span>
+        <span class="fa fa-star checked" style="color: orange;"></span>
+        <a href="https://classroom.elecbits.in/course/play-games-with-raspberry-pi/"><button style="margin-left: 20px; border-radius: 40px;">View Course</button></a>
+        </p>
+     </div>
+</div>
+
+</div>
+
+<div id="Tokyo" class="tabcontent">
+  <div class="arduinobox">
+    <div class="test1">
+    <img src="https://classroom.elecbits.in/wp-content/uploads/2019/02/30.png" height="350px" width="350px">
+        <h4 style="padding-left: 15px;"><b><a href="https://classroom.elecbits.in/course/elecbits-gps-one-introduction-to-gps/">Elecbits GPS One – Introduction to GPS</a></b></h4>
+        <p style="padding-left: 15px; margin-top: -7px; font-size: 14px;"><b><a href="https://classroom.elecbits.in/profile/">Elecbits16</a></b></p>
+        <p style="padding-left: 15px; padding-right: 15px; margin-top: -13px; text-align: justify; font-size: 14px;">Everything from cars to factories are tied to robotics and electronics engineering. Whether you dream of becoming a Hardware Designer at Apple or an Aerospace Technician at NASA, your robotics path starts here!</p>
+        <p style="margin-bottom: -50px;"><span class="fa fa-star checked" style="color: orange; padding-left: 15px;"></span>
+        <span class="fa fa-star checked" style="color: orange;"></span>
+        <span class="fa fa-star checked" style="color: orange;"></span>
+        <span class="fa fa-star checked" style="color: orange;"></span>
+        <a href="https://classroom.elecbits.in/course/elecbits-gps-one-introduction-to-gps/"><button style="margin-left: 20px; border-radius: 40px;">View Course</button></a>
+        </p>
+     </div>
+</div>
+</div>
+
+<script>
+  document.getElementById('London').style.display = "block";
+function openCity(evt, cityName) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  document.getElementById(cityName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+</script>
+   
+</body>
+</html> 
