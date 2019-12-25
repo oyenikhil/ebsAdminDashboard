@@ -1,4 +1,0 @@
-# rbotstxt.org/
-
-User-agent: * 
-Disallow:
