@@ -225,7 +225,7 @@ $scope.openEditDeviceModal = function(device) {
 }
 
 
-$scope.stopSiren = function() {
+$scope.stopNotificationSound = function() {
    audio.pause();
    audio.currentTime = 0;
 }
