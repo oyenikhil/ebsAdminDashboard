@@ -158,7 +158,7 @@ var WildRydes = window.WildRydes || {};
         signin(email, password,
             function signinSuccess() {
                 console.log('Successfully Logged In');
-                window.open('admin/index.html');
+                window.location.href = 'admin/index.html';
             },
             function signinError(err) {
                 alert(err);
