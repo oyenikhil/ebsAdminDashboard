@@ -39,25 +39,29 @@
          </nav>
 
          <!-- Notification Modal  -->
-         <div class="modal fade notification-modal" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                <div class="modal-content">
-                  <div class="modal-header">
+                  <div class="modal-header header-blue">
                      <h5 class="modal-title" id="exampleModalLabel">
                         EMERGENCY AT DEVICE NUMBER: <span id="notif-header"></span>
                      </h5>
-                     <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                     <button type="button" ng-click="stopNotificationSound()" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true" style="color: white">&times;</span>
-                      </button>  -->
+                      </button> 
                   </div>
                   <div class="modal-body">
-                     <div><span id="notif-sensor"></span> detected at <span id="notif-time"></span></div>
-                     <br> 
-                     <button type="button" ng-click="stopSiren()" class="btn btn-danger">Stop Siren</button>
-                     <input class="btn" type="button" value="View Live Feed" onclick="window.open('cam.html')" />
-                  </div>
-                  <div class="modal-footer">
-                     <button type="button" class="btn btn-secondary" ng-click="stopSiren()" data-dismiss="modal">Close</button>
+                    <div class="notification-body"><br>
+                      <i class="fa fa-exclamation-circle notification-icon"></i>
+                      <div><span id="notif-sensor"></span> detected at <span id="notif-time"></span></div><br>
+                      <div class="button-group">
+                        <!-- <button class="btn btn-danger btn-circle btn-circle-lg m-1"><i class="fa fa-sliders"></i></button> -->
+                       <button type="button" ng-click="playSiren()" class="btn btn-danger"><i class="fa fa-bell"></i>Play Siren</button>
+                       <button type="button" class="btn btn-primary"><i class="fa fa-envelope"></i>Trigger Messages</button>
+                       <!-- <button type="button" ng-click="stopNotificationSound()" class="btn">Stop Siren</button> -->
+                       <button type="button" onclick="window.open('cam.html', '_blank')" class="btn btn-primary"><i class="fa fa-play"></i>View Live Feed</button>msg: {{msg}}
+                     </div><br>
+                    </div>
                   </div>
                </div>
             </div>

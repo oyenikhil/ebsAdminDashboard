@@ -380,3 +380,32 @@ label {
 .table-hover tbody tr:hover {
     cursor: pointer;
 }
+
+.notification-body {
+    text-align: center;    
+}
+
+.notification-icon {
+    font-size: 52px;
+    color: red;
+}
+
+.notification-body div {
+    font-size: 28px;
+    font-style: bold;
+}
+
+.modal-title {
+    color: white;
+}
+
+.button-group i{
+    margin-right: 9px;
+}
+
+@media screen and (min-width: 576px){
+    .modal-dialog {
+        max-width: 575px!important;
+        margin: 1.75rem auto;
+    }
+}
