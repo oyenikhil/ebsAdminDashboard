@@ -301,11 +301,11 @@ a.article:hover {
     background-color: red!important;
 }
 
-.notification-modal .modal-header, .modal-title{
+/*.notification-modal .modal-header, .modal-title{
     background-color: red;
     font-weight: 600;
     color: white;
-}
+}*/
 
 .modal-content {
     border: none!important;
@@ -404,8 +404,114 @@ label {
 }
 
 @media screen and (min-width: 576px){
-    .modal-dialog {
-        max-width: 575px!important;
+    .notification-modal .modal-dialog {
+        max-width: 600px!important;
         margin: 1.75rem auto;
     }
+}
+
+.control-panel-btn {
+    margin: 4px 6px 12px 0px;
+}
+
+.list-group-item {
+    color: grey;
+}
+
+.notification-div:first-child {
+    color: red;
+}
+
+.notificationDiv a {
+    color: #3b70d2!important;
+    text-decoration: underline!important;
+    font-size: 18px!important;
+}
+
+.n-div {
+    font-size: 22px;
+    padding: 14px 0px;
+    border-bottom: 1px solid #d2cdcd;
+    margin: 10px 0px;
+}
+
+h3 {
+        color: #808080!important;
+    margin-bottom: 16px!important;
+}
+
+.light-text {
+    color: red!important;
+}
+
+.input-group {
+    margin-bottom: 24px!important;
+}
+
+.confirmation-msg {
+    color: green;
+    display: none;
+}
+
+.wait-msg {
+    color: grey;
+    display: none;
+}
+
+.select-box {
+    padding: .375rem .75rem;
+    color: #495057;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+}
+
+.no-notif-div {
+    text-align: center;
+    font-size: 18px;
+    color: #949494;
+    margin: 44px 0;
+}
+
+.no-notif-div i {
+    font-size: 32px;
+}
+
+.no-notif-div div {
+    margin-bottom: 8px;
+}
+
+.notification-card {
+    box-shadow: 0 2px 1px -1px rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 1px 3px 0 rgba(0,0,0,.12);
+    padding: 16px;
+    border-radius: 4px;
+    margin: 18px 0;
+}
+
+.card-text {
+    margin-bottom: 10px!important;
+}
+
+.card {
+    margin-bottom: 16px;
+}
+
+input[type="radio"] {
+    margin-right: 2px!important;
+}
+
+.radio-inline {
+    margin-right: 14px;
+}
+
+.radio-group {
+    margin-bottom: .5rem;
+}
+
+.m-0 {
+    margin: 0px!important;
+}
+
+.pointer {
+    cursor: pointer;
 }

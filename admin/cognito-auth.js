@@ -101,7 +101,6 @@ var WildRydes = window.WildRydes || {};
         userPool.signUp(email, password, [attributeEmail, attributeDeviceId], null,
             function signUpCallback(err, result) {
                 if (!err) {
-                    console.log('result', result);
                     onSuccess(result);
                 } else {
                     console.log('err', err);
@@ -157,7 +156,6 @@ var WildRydes = window.WildRydes || {};
         event.preventDefault();
         signin(email, password,
             function signinSuccess() {
-                console.log('Successfully Logged In');
                 window.location.href = 'admin/index.html';
             },
             function signinError(err) {
@@ -174,7 +172,6 @@ var WildRydes = window.WildRydes || {};
 
         var onSuccess = function registerSuccess(result) {
             var cognitoUser = result.user;
-            console.log('user name is ' + cognitoUser.getUsername());
             var confirmation = ('Registration successful. Please check your email inbox or spam folder for your verification code.');
             if (confirmation) {
                 window.location.href = 'verify.html';
@@ -198,8 +195,6 @@ var WildRydes = window.WildRydes || {};
         event.preventDefault();
         verify(email, code,
             function verifySuccess(result) {
-                console.log('call result: ' + result);
-                console.log('Successfully verified');
                 alert('Verification successful. You will now be redirected to the login page.');
                 window.location.href = signinUrl;
             },

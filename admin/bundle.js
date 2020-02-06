@@ -33,15 +33,25 @@ var authToken;
 
 var app = angular.module('myApp', []);
 app.controller('myCtrl', function($scope, $http) {
+  
+  $scope.notifs = [];
+  $scope.hi = "";
+  $scope.modeOptions = [['MANUAL'],['AUTO']];
+  $scope.showConfirmation = false;
+  var audio = new Audio('siren.mp3');
+  $scope.xyz = [];
+  document.getElementById('no-notif-div').style.display = "block";
+  document.getElementById('notif-div').style.display = "none";
+  $scope.dashboardLocation = "28.484993,77.094941";
+  $scope.orderByField = 'deviceId';
+  $scope.reverseSort = false;
+
     WildRydes.authToken.then(function setAuthToken(token) {
         if (token) {
-            console.log('from ridejs', token);
             $scope.authToken = token;
             $scope.parsedAuthToken = $scope.parseAuthToken(token);
-            console.log($scope.parsedAuthToken);
             $scope.deviceId = $scope.parsedAuthToken['custom:device_id'];
             $scope.email = $scope.parsedAuthToken.email;
-            console.log('email', $scope.email);
             $scope.cognitoUserID = $scope.parsedAuthToken.sub
         } else {
             window.location.href = 'signin.html';
@@ -50,15 +60,6 @@ app.controller('myCtrl', function($scope, $http) {
          //alert(error);
          //window.location.href = '/signin.html';
     });
-
-   $scope.init = function () {   
-      var audio = new Audio('siren.mp3');
-      $scope.getDevices();
-   }
-
-   var audio = new Audio('siren.mp3');
-
-   //$scope.getDevices();
 
    $scope.toggleSidebar = function(){
       var element = document.getElementById("sidebar");
@@ -76,18 +77,6 @@ var AWS = require('aws-sdk');
 var AWSIoTData = require('aws-iot-device-sdk');
 var AWSConfiguration = require('./aws-configuration.js');
 
-console.log('Loaded AWS SDK for JavaScript and AWS IoT SDK for Node.js');
-
-//
-// Remember our current subscription topic here.
-//
-var currentlySubscribedTopic = 'bell';
-
-//
-// Remember our message history here.
-//
-var messageHistory = '';
-
 //
 // Create a client id to use when connecting to AWS IoT.
 //
@@ -97,47 +86,18 @@ var clientId = 'mqtt-explorer-' + (Math.floor((Math.random() * 100000) + 1));
 // Initialize our configuration.
 //
 AWS.config.region = AWSConfiguration.region;
-
 AWS.config.credentials = new AWS.CognitoIdentityCredentials({
    IdentityPoolId: AWSConfiguration.poolId
 });
 
-//
-// Create the AWS IoT device object.  Note that the credentials must be 
-// initialized with empty strings; when we successfully authenticate to
-// the Cognito Identity Pool, the credentials will be dynamically updated.
-//
 const mqttClient = AWSIoTData.device({
-   //
-   // Set the AWS region we will operate in.
-   //
    region: AWS.config.region,
-   //
-   ////Set the AWS IoT Host Endpoint
    host:AWSConfiguration.host,
-   //
-   // Use the clientId created earlier.
-   //
    clientId: clientId,
-   //
-   // Connect via secure WebSocket
-   //
    protocol: 'wss',
    keepalive: 40000,
-   //
-   // Set the maximum reconnect time to 8 seconds; this is a browser application
-   // so we don't want to leave the user waiting too long for reconnection after
-   // re-connecting to the network/re-opening their laptop/etc...
-   //
    maximumReconnectTimeMs: 8000,
-   //
-   // Enable console debugging information (optional)
-   //
    debug: true,
-   //
-   // IMPORTANT: the AWS access key ID, secret key, and sesion token must be 
-   // initialized with empty strings.
-   //
    accessKeyId: '',
    secretKey: '',
    sessionToken: ''
@@ -151,9 +111,6 @@ const mqttClient = AWSIoTData.device({
 var cognitoIdentity = new AWS.CognitoIdentity();
 AWS.config.credentials.get(function(err, data) {
    if (!err) {
-      console.log('retrieved identity: ' + AWS.config.credentials.identityId);
-      console.log('AWS.config', AWS.config);
-      console.log('AWS', AWS);
       var params = {
          IdentityId: AWS.config.credentials.identityId
       };
@@ -182,7 +139,12 @@ AWS.config.credentials.get(function(err, data) {
 // Subscribe to lifecycle events on the first connect event.
 //
 window.mqttClientConnectHandler = function() {
-   mqttClient.subscribe('device/#');
+   console.log('Connected!');
+   mqttClient.subscribe('device/+/sensor');
+   mqttClient.subscribe('$aws/things/+/shadow/update');
+   mqttClient.subscribe('device/+/sim_response');
+   mqttClient.subscribe('device/+/sim_command');
+   //mqttClient.subscribe('$aws/things/+/shadow/get/accepted');
 };
 
 //
@@ -196,20 +158,142 @@ window.mqttClientConnectHandler = function() {
 
 window.mqttClientMessageHandler = function(topic, payload) {
    console.log('topic: ' + topic + ', msg:' + payload.toString());
+   if(!topic.includes('Saurav_esp_ledstrip2') && !topic.includes('sim_response')) {
+   
+   var parsedMsg = JSON.parse(payload);
+
+   if (topic.includes('update') && parsedMsg.state.reported && Object.keys(parsedMsg.state.reported).length != 2) {
+     document.getElementById('wait-msg').style.display = "none";
+     document.getElementById('confirmation-msg').style.display = "block";
+     console.log('var', $scope.showConfirmation);
+     setTimeout(function() {document.getElementById('confirmation-msg').style.display = "none"}, 4000);
+   }
+
    if(topic.includes('sensor')) {
       $scope.msg = JSON.parse(payload);
-      console.log('SENSOR:', ($scope.msg), 'TYPE:',typeof $scope.msg);
-      document.getElementById('notif-header').innerHTML = $scope.msg.deviceId;
-      document.getElementById('notif-sensor').innerHTML = $scope.msg.sensor;
-      document.getElementById('notif-time').innerHTML = $scope.msg.time;
-      $('#exampleModal').modal('toggle');    
-      audio.play();   
+      $scope.addNotification($scope.msg);
+      $scope.notifs.push($scope.msg);
+      audio.play();
    }
+ }
+
+  if(topic.includes('sim_response')) {
+   document.getElementById('simResponse').innerHTML = payload;
+   //document.getElementById('simResponse').style.display = block;
+  }
+
 };
 
-$scope.openDialog = function(){
-   $('#exampleModal').modal('toggle'); 
+$scope.makeApiCall = function (parsedMsg) {
+  parsedMsg.state.reported["deviceId"] = $scope.editModalDevice.deviceId; 
+  var data = JSON.stringify(parsedMsg.state.reported);
+  $http({
+            method: "POST",
+            url: 'https://kjp1y833xk.execute-api.ap-south-1.amazonaws.com/test/device',
+            data: data,
+            contentType: 'application/json'
+        }).then(function mySuccess(response) {
+            if(response.status == 201) {
+               $scope.getDevices();
+               document.getElementById('confirmation-msg').style.display = "block";
+               console.log('var', $scope.showConfirmation);
+               setTimeout(function() {document.getElementById('confirmation-msg').style.display = "none"}, 4000);
+                //editDevice ? $('#editDeviceModal').modal('toggle') : $('#addDeviceModal').modal('toggle');               
+                //$('#addDeviceModal').modal('toggle');
+                //$scope.getDevices();
+                //$scope.deviceId = $scope.customerName = $scope.mobileNumbersString = $scope.mode = null;
+            }
+        }, function myError(response) {
+            console.log(response);
+        });
 }
+
+$scope.commandPayload = "";
+
+$scope.sendCmd = function(deviceId, infoType) {
+  var message = {}
+
+
+  if(infoType === 'CALL' || infoType === 'USSD') {
+    message[infoType] = [$scope.commandPayload];
+    //message.infoType = "92828";
+    //message = { [infoType] : [$scope.commandPayload]};
+  }
+
+  if(infoType === 'OPERATOR' || infoType === 'SIGNAL') {
+    message = { [infoType] : ["nopayload"]};
+  }
+
+  console.log(message);
+
+  mqttClient.publish('device/' + deviceId + '/sim_command', JSON.stringify(message));
+}
+
+$scope.clearCmd = function() {
+  $scope.commandPayload = "";
+  if($scope.infoType === 'OPERATOR' || $scope.infoType === 'SIGNAL') {
+    document.getElementById("myInput").disabled = true;
+  } else {
+    document.getElementById("myInput").disabled = false;
+  }
+}
+
+
+$scope.addNotification = function(notif) {
+  document.getElementById('no-notif-div').style.display = "none";
+  document.getElementById('notif-div').style.display = "block";
+  var div = document.createElement("div");
+  div.id = notif.deviceId;
+  div.className = 'n-div';
+  var timee = $scope.timeConverter1(notif.time);
+  var test = "<div style='margin-bottom:6px;'>" + notif.deviceId + ': ' + notif.sensor + " detected at " + timee + "</div>";
+  test += "<button type='button' class='btn btn-outline-primary control-panel-btn'><i class='fas fa-video'></i>&nbsp;Live Feed</button>" +
+          "<button class='btn btn-outline-danger control-panel-btn'><i class='fa fa-bell'></i>&nbsp;Play Siren</button>" +
+          "<button class='btn btn-outline-danger control-panel-btn'><i class='fa fa-bell'></i>&nbsp;Stop Siren</button>" +
+          "<button class='btn btn-outline-primary control-panel-btn'><i class='fas fa-paper-plane'></i>&nbsp;Trigger SMS</button><br>" +
+          "<a></a><br><div></div><br><a></a>";
+  div.innerHTML = test;
+  document.getElementById('notificationDiv').prepend(div);
+  var childNodes = div.childNodes;
+  var livePreviewLink = "http://35.239.70.45/image_retrival.php?deviceid=" + 
+                        notif.deviceId + "&sensor=" + notif.sensor + "&time1=" + notif.time;
+  childNodes[1].onclick = function() {openLiveFeed()};
+  childNodes[2].onclick = function() {playSirenJs()};
+  childNodes[3].onclick = function() {stopSirenJs()};
+  childNodes[4].onclick = function() {sendMessagesJs()};
+  childNodes[6].id = 'img-' + notif.deviceId + '-' + notif.time;
+  childNodes[6].innerHTML = 'Live Preview!'; 
+  childNodes[6].href = livePreviewLink;
+  childNodes[6].target = '_blank';
+
+  let deviceInfo = $scope.deviceArray.find(device => device.deviceId === notif.deviceId);
+  $scope.generateRouteLink(deviceInfo.location);
+  console.log(deviceInfo);
+  childNodes[8].innerHTML = deviceInfo.customerAddress;
+  childNodes[10].innerHTML = 'View Route'; 
+  childNodes[10].href = $scope.generateRouteLink(deviceInfo.location);
+  childNodes[10].target = '_blank';
+}
+
+$scope.generateRouteLink = function(customerLocation) {
+  return "https://www.google.com/maps/dir/?api=1&origin=" + $scope.dashboardLocation +
+         "&destination=" + customerLocation;
+}
+
+function openLiveFeed() {
+  window.open('cam.html', '_blank');
+}
+
+function playSirenJs() {
+  mqttClient.publish('$aws/things/Saurav_esp_ledstrip2/shadow/update', 'ON');
+  console.log('siren on');
+}
+
+function stopSirenJs() {
+  mqttClient.publish('$aws/things/Saurav_esp_ledstrip2/shadow/update', 'OFF');
+  console.log('siren off');
+}
+
 
 $scope.openAddDeviceModal = function(){
    $scope.mobileNumbersString = null;
@@ -217,10 +301,17 @@ $scope.openAddDeviceModal = function(){
 }
 
 $scope.openEditDeviceModal = function(device) {
-   $scope.mobileNumbersString = device.mobileNumbers.toString();
+  document.getElementById('simResponse').innerHTML = '';
+  $scope.commandPayload = "";
+  document.getElementById('wait-msg').style.display = "none";
+  console.log('device', device);
+  $scope.xyz = device.mode;
+  $scope.showConfirmation = false;
+   //$scope.mobileNumbersString = device.mobileNumbers.toString();
    $('#editDeviceModal').modal('toggle');
-   console.log('device:', device);
    $scope.editModalDevice = device;
+   $scope.editModalDevice.mode = device.mode[0];
+   //$scope.editModalDevice.mode = ['MANUAL'];
    $scope.getDeviceNotifications(device.deviceId);
 }
 
@@ -237,15 +328,15 @@ mqttClient.on('connect', window.mqttClientConnectHandler);
 //mqttClient.on('reconnect', window.mqttClientReconnectHandler);
 mqttClient.on('message', window.mqttClientMessageHandler);
 
-$scope.getDevices = function () {
+$scope.getDevices = function(){
         $http({
             method: "GET",
             url: 'https://kjp1y833xk.execute-api.ap-south-1.amazonaws.com/test/device',
             contentType: 'application/json'
         }).then(function mySuccess(response) {
             if(response.status == 200) {
+              console.log(response.data);
                 $scope.deviceArray = response.data;
-                console.log('deviceArr', $scope.deviceArray);
             }
         }, function myError(response) {
             console.log(response);
@@ -255,13 +346,14 @@ $scope.getDevices = function () {
 $scope.postDevice = function (editDevice, setting) {
    $scope.mobileNumbersArray = $scope.mobileNumbersString.split(',');
    if(editDevice) {
-      $scope.mobilePubTopic = "device/"+ $scope.editModalDevice.deviceId + "/mobile";
-      $scope.modePubTopic = "device/"+ $scope.editModalDevice.deviceId + "/mode";
-      $scope.mobilePubMessage = "CHANGE"+$scope.mobileNumbersString+"NUM";
-      setting == 'mob' ? mqttClient.publish($scope.mobilePubTopic, $scope.mobilePubMessage) : mqttClient.publish($scope.modePubTopic, $scope.editModalDevice.mode); 
+      //$scope.mobilePubTopic = "device/"+ $scope.editModalDevice.deviceId + "/mobile";
+      //$scope.modePubTopic = "device/"+ $scope.editModalDevice.deviceId + "/mode";
+      //$scope.mobilePubMessage = "CHANGE"+$scope.mobileNumbersString+"NUM";
+      //setting == 'mob' ? mqttClient.publish($scope.mobilePubTopic, $scope.mobilePubMessage) : mqttClient.publish($scope.modePubTopic, $scope.editModalDevice.mode); 
       // mqttClient.publish($scope.mobilePubTopic, $scope.mobilePubMessage);
       // mqttClient.publish($scope.modePubTopic, $scope.editModalDevice.mode);
       //console.log('mob', $scope.mobilePubMessage);
+
       var data = JSON.stringify({
          "deviceId": $scope.editModalDevice.deviceId,
          "customerName": $scope.editModalDevice.customerName,
@@ -277,7 +369,7 @@ $scope.postDevice = function (editDevice, setting) {
       });
    }
 
-        $http({
+   $http({
             method: "POST",
             url: 'https://kjp1y833xk.execute-api.ap-south-1.amazonaws.com/test/device',
             data: data,
@@ -292,7 +384,34 @@ $scope.postDevice = function (editDevice, setting) {
         }, function myError(response) {
             console.log(response);
         });
-    }
+        
+}
+
+$scope.putDevice = function (topic, parsedMsg) {
+  var deviceId = topic.split('/')[2];
+  console.log('msg',parsedMsg);
+  parsedMsg.state.reported['deviceId'] = deviceId;
+
+   $http({
+            method: "PUT",
+            url: 'https://kjp1y833xk.execute-api.ap-south-1.amazonaws.com/test/device',
+            data: JSON.stringify(parsedMsg.state.reported),
+            contentType: 'application/json'
+        }).then(function mySuccess(response) {
+            if(response.status == 204) {
+              document.getElementById('wait-msg').style.display = "none";
+              document.getElementById('confirmation-msg').style.display = "block";
+               console.log('var', $scope.showConfirmation);
+               setTimeout(function() {document.getElementById('confirmation-msg').style.display = "none"}, 4000);
+              console.log("success");
+            }
+        }, function myError(response) {
+            console.log(response);
+        });
+ 
+}
+
+
 
 $scope.getDeviceNotifications = function (deviceId) {
         $http({
@@ -301,22 +420,153 @@ $scope.getDeviceNotifications = function (deviceId) {
             url: 'https://kjp1y833xk.execute-api.ap-south-1.amazonaws.com/test/sensors'
         }).then(function mySuccess(response) {
             if(response.status == 200) {
-                console.log('notifs', response.data)
                 $scope.notifications = response.data;
-                //console.log('persons', $scope.persons);
+                console.log('notifs', $scope.notifications);
             }
         }, function myError(response) {
             console.log(response);
         });
     }
 
+    function sendMessagesJs() {
+        fetch('http://api.textlocal.in/send/?apiKey=4KyJdpNUImc-IfWruKM8yEXi1MPtzN3DobwnNOiQzb&sender=TXTLCL&group_id=1037625&message=Emergency%20at%20device0002-http://ebs-admin.s3-website.ap-south-1.amazonaws.com/admin/cam.html').then(function(response) {
+            return response.json();
+        }).then(function(data) {
+            alert('Messages Triggered Successfully! :D');
+        }).catch(function() {
+            console.log("Error in sending messages :(");
+        });
+    }
+
+    $scope.siren = 0;
+
+    $scope.playSiren = function() {
+      if(!$scope.siren) {
+        mqttClient.publish('$aws/things/Saurav_esp_ledstrip2/shadow/update', 'ON');
+        $scope.siren = 1;
+      }
+
+      else {
+        mqttClient.publish('$aws/things/Saurav_esp_ledstrip2/shadow/update', 'OFF');
+        $scope.siren = 0;
+      }
+    }
+
 
     var init = function () {
-
-       $scope.getDevices();
+      $scope.toggleSidebar(); 
+      $scope.getDevices();
    };
-// and fire it after definition
-init();
+
+   init();
+
+   function yourFunction(){
+    $scope.getDevices();
+    setTimeout(yourFunction, 10000);
+   }
+
+   yourFunction();
+
+   $scope.publishMode = function(deviceId, mode) {
+     $scope.payload = {
+         "state" : {
+           "desired": {
+             "mode" : [mode]
+           }
+         }
+        }
+        console.log(JSON.stringify($scope.payload));
+     mqttClient.publish('$aws/things/' + deviceId + '/shadow/update',
+                         JSON.stringify($scope.payload));
+     document.getElementById('wait-msg').style.display = "block";
+   }
+
+   $scope.publishNumbers = function(deviceId, numberString, autoOrManualOrAdmin) {
+     var numbersArray = numberString.split(',');
+     console.log('NumbersArr', numbersArray);
+     if (autoOrManualOrAdmin == 'auto') {
+         $scope.payload = {
+         "state" : {
+           "desired": {
+             "auto_num" : numbersArray
+           }
+         }
+        }
+
+        //$scope.putDevice(JSON.stringify({'deviceId': deviceId, 'auto_num': numbersArray}));
+
+     } else if (autoOrManualOrAdmin == 'manual') {
+       $scope.payload = {
+       "state" : {
+         "desired": {
+           "man_num" : numbersArray
+         }
+       }
+      }
+
+      //$scope.putDevice(JSON.stringify({'deviceId': deviceId, 'man_num': numbersArray})) ;
+     }
+
+     else if(autoOrManualOrAdmin == 'admin') {
+       $scope.payload = {
+       "state" : {
+         "desired": {
+           "admin_num" : numbersArray
+         }
+       }
+      }
+
+      //$scope.putDevice(JSON.stringify({'deviceId': deviceId, 'admin_num': numbersArray})) ;
+     }
+
+     document.getElementById('wait-msg').style.display = "block";
+
+     mqttClient.publish('$aws/things/' + deviceId +'/shadow/update',
+                         JSON.stringify($scope.payload));
+   }
+
+   $scope.captureScreenshot = function (did, sensor, timestamp, triggerSrc) {
+        var queryParams = {deviceId: did, sensor: sensor, timestamp: timestamp}
+        $http({
+            method: "GET",
+            url: 'http://35.239.70.45/test.php',
+            params: queryParams
+        }).then(function mySuccess(response) {
+          if(response.status == 200) {
+            var link = (response.data).split('Success<br>').pop();
+            if (triggerSrc == 'notification') {
+              document.getElementById('img-'+ did + '-' + timestamp).href = link;
+              document.getElementById('img-'+ did + '-' + timestamp).target = '_blank';
+              document.getElementById('img-'+ did + '-' + timestamp).innerHTML = 'View Screenshot';
+
+            } else {
+              alert('Link: '+ link);
+            }
+          }
+        }, function myError(response) {
+            console.log('Error: ', response);
+            alert('Error taking screenshot!')
+        });
+ }
+
+
+$scope.timeConverter1 = function(UNIX_timestamp){
+  var a = new Date(UNIX_timestamp * 1000);
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var year = a.getFullYear();
+  var month = months[a.getMonth()];
+  var date = a.getDate();
+  var hour = a.getHours();
+  var min = a.getMinutes();
+  var sec = a.getSeconds();
+  var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+  return time;
+}
+
+$scope.timeConverter = function(UNIX_timestamp){
+  var d = new Date(parseInt(UNIX_timestamp)).toString("HH:mm:ss - d MMM yyyy ");
+  return (d);
+}
 
 });
 
